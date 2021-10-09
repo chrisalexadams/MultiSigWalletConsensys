@@ -40,7 +40,7 @@ contract MultiSigWallet {
 	    bool executed;
 	}
 	
-    function addTransaction(address destination, uint value, bytes memory data) public returns (uint transactionId) {
+    function addTransaction(address destination, uint value, bytes memory data) public payable returns (uint transactionId) {
 	    transactionId = transactionCount;
 	    transactions[transactionId] = Transaction ({
 		    destination: destination,
@@ -52,13 +52,13 @@ contract MultiSigWallet {
 	emit Submission(transactionId);
     }
     
-    function submitTransaction(address destination, uint value, bytes memory data) public returns (uint transactionId) {
+    function submitTransaction(address destination, uint value, bytes memory data) public payable returns (uint transactionId) {
         require(isOwner[msg.sender]);
         transactionId = addTransaction (destination, value, data);
         confirmTransaction(transactionId);
     }
     
-    function confirmTransaction (uint transactionId) public {
+    function confirmTransaction (uint transactionId) public payable {
 	    require(isOwner[msg.sender]);
 	    require(transactions[transactionId].destination != address(0));
 	    require(confirmations[transactionId][msg.sender] == false);
@@ -77,7 +77,7 @@ contract MultiSigWallet {
 		}
 	}
 	
-	function executeTransaction(uint transactionId) public {
+	function executeTransaction(uint transactionId) public payable {
         require(transactions[transactionId].executed == false);
         if (isConfirmed(transactionId)) {
             Transaction storage t = transactions[transactionId];
